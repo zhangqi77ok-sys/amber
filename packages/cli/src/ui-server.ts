@@ -316,10 +316,20 @@ function renderAmberDashboardHtml(): string {
           <span class="text-xs text-amber-500/80 font-mono ml-1.5 px-2 py-0.5 rounded border border-amber-500/30 bg-amber-500/10">灵珀控制台 v0.1.0</span>
         </div>
       </div>
-      <div class="flex items-center space-x-4">
-        <div class="flex items-center space-x-2 text-xs text-gray-400 bg-gray-900/80 px-3 py-1.5 rounded-full border border-gray-800">
+      <div class="flex items-center space-x-3">
+        <!-- 导航 Tabs -->
+        <div class="flex items-center p-1 bg-gray-900/90 rounded-xl border border-gray-800 text-xs">
+          <button onclick="switchTab('dashboard')" id="tabBtnDashboard" class="px-3.5 py-1.5 rounded-lg font-medium transition bg-amber-500 text-gray-950 font-bold shadow">
+            💎 仪表盘
+          </button>
+          <button onclick="switchTab('guide')" id="tabBtnGuide" class="px-3.5 py-1.5 rounded-lg font-medium transition text-gray-400 hover:text-white">
+            📖 操作指南与教程
+          </button>
+        </div>
+
+        <div class="hidden md:flex items-center space-x-2 text-xs text-gray-400 bg-gray-900/80 px-3 py-1.5 rounded-full border border-gray-800">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Base L2 / Git-DAG 状态同步中</span>
+          <span>OP Sepolia / Git-DAG 在线</span>
         </div>
       </div>
     </div>
@@ -327,6 +337,9 @@ function renderAmberDashboardHtml(): string {
 
   <!-- 主体内容区域 -->
   <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full space-y-8">
+    
+    <!-- 仪表盘视图 (Dashboard View) -->
+    <div id="viewDashboard" class="space-y-8">
     
     <!-- 顶部状态卡片 -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
@@ -489,6 +502,183 @@ console.log("🧮 算力测试: 1024 * 1024 =", 1024 * 1024);</textarea>
           </div>
         </div>
 
+      </div>
+
+    </div>
+
+    </div> <!-- 结束 viewDashboard -->
+
+    <!-- 教程与操作指南视图 (Guide View) -->
+    <div id="viewGuide" class="space-y-8 hidden">
+      
+      <!-- 顶部 Banner -->
+      <div class="glass-card rounded-2xl p-6 border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-transparent to-emerald-500/10">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-amber-500/10 rounded-2xl text-3xl border border-amber-500/20">📖</div>
+          <div>
+            <h1 class="text-xl font-bold text-white flex items-center gap-2">
+              Amber（灵珀）新手操作完全指南
+              <span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 font-mono">从入门到精通</span>
+            </h1>
+            <p class="text-xs text-gray-400 mt-1">系统化掌握“去中心化主权记忆 (Git-DAG)”、“安全隔离沙盒 (Sandbox)”与“公链存证”的核心操作流程与开发对接方式。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 六大核心模块操作攻略网格 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- 教程卡片 1: 主权记忆存取 -->
+        <div class="glass-card rounded-2xl p-6 space-y-4">
+          <div class="flex items-center gap-2 pb-3 border-b border-gray-800">
+            <span class="text-lg">✨</span>
+            <h2 class="text-sm font-bold text-white">1. 如何沉淀与语义召回记忆？</h2>
+          </div>
+          <div class="space-y-2.5 text-xs text-gray-300">
+            <div class="flex gap-2.5">
+              <span class="font-bold text-amber-400">步骤 1:</span>
+              <span>在仪表盘输入框中输入经验、架构决策或排错笔记。</span>
+            </div>
+            <div class="flex gap-2.5">
+              <span class="font-bold text-amber-400">步骤 2:</span>
+              <span>选择所属<b>主题分支</b>（如 <code class="text-amber-300">coding</code> 或 <code class="text-amber-300">architecture</code>），设定标签与重要度星级。</span>
+            </div>
+            <div class="flex gap-2.5">
+              <span class="font-bold text-amber-400">步骤 3:</span>
+              <span>点击<b>【✨ 封存记忆】</b>。本地自动触发 <code class="text-emerald-400">AES-256-GCM</code> 加密，并动态聚合计算出新的 <b>Merkle Root 根哈希</b>。</span>
+            </div>
+            <div class="flex gap-2.5">
+              <span class="font-bold text-amber-400">步骤 4:</span>
+              <span>在右下角【语义召回】中输入任意模糊关键词，算法会自动根据内容相关性与标签权重秒级呈现匹配记忆。</span>
+            </div>
+          </div>
+          <div class="p-3 bg-black/40 rounded-xl border border-gray-800/80 text-[11px] text-gray-400 font-mono">
+            💡 提示：记忆分片是严格物理隔离的，各分支的根哈希与版本递增互不影响。
+          </div>
+        </div>
+
+        <!-- 教程卡片 2: 安全隔离沙盒 -->
+        <div class="glass-card rounded-2xl p-6 space-y-4">
+          <div class="flex items-center gap-2 pb-3 border-b border-gray-800">
+            <span class="text-lg">🛡️</span>
+            <h2 class="text-sm font-bold text-white">2. 如何使用代码隔离沙盒？</h2>
+          </div>
+          <div class="space-y-2.5 text-xs text-gray-300">
+            <div class="flex gap-2.5">
+              <span class="font-bold text-emerald-400">操作:</span>
+              <span>在仪表盘右侧的<b>隔离沙盒代码框</b>中编写或粘贴任意 JavaScript / Python 脚本，点击<b>【▶ 运行沙盒】</b>。</span>
+            </div>
+            <div class="flex gap-2.5">
+              <span class="font-bold text-emerald-400">防死循环:</span>
+              <span>沙盒自带 <b>5000ms 强制超时熔断守护</b>，即使运行 <code class="text-red-400">while(true)</code> 也绝不会卡死电脑。</span>
+            </div>
+            <div class="flex gap-2.5">
+              <span class="font-bold text-emerald-400">防秘钥泄露:</span>
+              <span>沙盒自动深度清洗环境变量，任何包含 <code class="text-amber-400">KEY</code>、<code class="text-amber-400">SECRET</code>、<code class="text-amber-400">TOKEN</code> 的凭据被 100% 物理剥离。</span>
+            </div>
+          </div>
+          <div class="p-3 bg-black/40 rounded-xl border border-gray-800/80 text-[11px] text-gray-400 font-mono">
+            🛡️ 验证方法：在沙盒中运行 <code class="text-emerald-400">console.log(process.env)</code>，输出中绝无任何宿主敏感密钥。
+          </div>
+        </div>
+
+        <!-- 教程卡片 3: Git-DAG 链上确权与 Arweave 永久存储 -->
+        <div class="glass-card rounded-2xl p-6 space-y-4">
+          <div class="flex items-center gap-2 pb-3 border-b border-gray-800">
+            <span class="text-lg">⛓️</span>
+            <h2 class="text-sm font-bold text-white">3. 如何将记忆永久上链与存储？</h2>
+          </div>
+          <div class="space-y-2.5 text-xs text-gray-300">
+            <div class="flex gap-2.5">
+              <span class="font-bold text-sky-400">第一步:</span>
+              <span>点击左下角<b>【📦 生成 Git-DAG 铸造包】</b>。系统自动计算当前分支与上个版本的增量变化（Delta）。</span>
+            </div>
+            <div class="flex gap-2.5">
+              <span class="font-bold text-sky-400">第二步:</span>
+              <span>增量密文通过 <b>Arweave / Irys 永久去中心化网络</b> 免费永久备份（单次小于 100 KB 永久免 Gas 存证）。</span>
+            </div>
+            <div class="flex gap-2.5">
+              <span class="font-bold text-sky-400">第三步:</span>
+              <span>仅将 32 字节的新 Merkle Root 写入 <b>OP Sepolia / Base 智能合约</b>。合约内置校验 <code class="text-sky-300">parentHash</code>，防止并发冲突与历史伪造。</span>
+            </div>
+          </div>
+          <div class="p-3 bg-black/40 rounded-xl border border-gray-800/80 text-[11px] text-gray-400 font-mono">
+            🔗 公网合约地址: <a href="https://sepolia-optimism.etherscan.io/address/0xdE6Ab63C951a34C65f591eD3B9A47d142a7604Ca" target="_blank" class="text-amber-400 underline">0xdE6A...04Ca (OP Sepolia)</a>
+          </div>
+        </div>
+
+        <!-- 教程卡片 4: 接入 Cursor / Claude / Antigravity -->
+        <div class="glass-card rounded-2xl p-6 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-gray-800">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🔌</span>
+              <h2 class="text-sm font-bold text-white">4. 接入 Cursor / Claude Desktop (MCP)</h2>
+            </div>
+            <button onclick="copyMcpConfig()" class="px-2.5 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-200 text-[10px] font-mono transition">
+              📋 复制 JSON
+            </button>
+          </div>
+          <p class="text-xs text-gray-300">将下方配置填入 Claude Desktop 或 Cursor 的 MCP 设置，即可在其他 AI 编辑器中共享同一套记忆：</p>
+          <pre id="mcpConfigSnippet" class="p-3 bg-black/70 rounded-xl border border-gray-800 text-[11px] font-mono text-amber-300 overflow-x-auto">{
+  "mcpServers": {
+    "amber": {
+      "command": "node",
+      "args": ["packages/mcp-server/dist/index.js"]
+    }
+  }
+}</pre>
+          <div class="text-[11px] text-gray-400">
+            接入后可在 Claude/Cursor 聊天中直接调用 <code class="text-amber-400">amber_recall</code> 召回您在 Amber 里沉淀的所有知识！
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 底部卡片 5: 终端 CLI 完全速查表 -->
+      <div class="glass-card rounded-2xl p-6 space-y-4">
+        <div class="flex items-center gap-2 pb-3 border-b border-gray-800">
+          <span class="text-lg">💻</span>
+          <h2 class="text-sm font-bold text-white">5. 开发者终端 CLI 命令完全速查表</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs font-mono">
+          
+          <div class="p-3 rounded-xl bg-black/40 border border-gray-800 space-y-1">
+            <div class="text-amber-400 font-bold">1. 查看运行状态</div>
+            <div class="text-gray-300 bg-gray-900 px-2 py-1 rounded">npx tsx packages/cli/src/index.ts status</div>
+            <div class="text-[10px] text-gray-500 font-sans">查看所有分支条目数与累积 Merkle Root</div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-black/40 border border-gray-800 space-y-1">
+            <div class="text-amber-400 font-bold">2. 沉淀核心认知</div>
+            <div class="text-gray-300 bg-gray-900 px-2 py-1 rounded">remember "经验内容" -b coding -t tag1 -i 5</div>
+            <div class="text-[10px] text-gray-500 font-sans">指定分支、标签并按 1~5 评定重要度</div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-black/40 border border-gray-800 space-y-1">
+            <div class="text-amber-400 font-bold">3. 语义关联召回</div>
+            <div class="text-gray-300 bg-gray-900 px-2 py-1 rounded">recall "搜索关键词" -b coding</div>
+            <div class="text-[10px] text-gray-500 font-sans">根据意图匹配度倒序输出最相关记忆</div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-black/40 border border-gray-800 space-y-1">
+            <div class="text-amber-400 font-bold">4. 隔离沙盒运行</div>
+            <div class="text-gray-300 bg-gray-900 px-2 py-1 rounded">run script.js --timeout 5000</div>
+            <div class="text-[10px] text-gray-500 font-sans">自动过滤宿主敏感私钥，超时强行熔断</div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-black/40 border border-gray-800 space-y-1">
+            <div class="text-amber-400 font-bold">5. 触发睡眠压实</div>
+            <div class="text-gray-300 bg-gray-900 px-2 py-1 rounded">compact -b coding</div>
+            <div class="text-[10px] text-gray-500 font-sans">自动合并零碎同类日志为高阶认知结晶</div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-black/40 border border-gray-800 space-y-1">
+            <div class="text-amber-400 font-bold">6. 启动 Web 控制台</div>
+            <div class="text-gray-300 bg-gray-900 px-2 py-1 rounded">ui --port 3777</div>
+            <div class="text-[10px] text-gray-500 font-sans">在本地浏览器中启动现代可视化控制台</div>
+          </div>
+
+        </div>
       </div>
 
     </div>
@@ -770,6 +960,31 @@ console.log("🧮 算力测试: 1024 * 1024 =", 1024 * 1024);</textarea>
 
     function closeNodeModal() {
       document.getElementById('nodeDetailModal').classList.add('hidden');
+    }
+
+    function switchTab(tab) {
+      const dashView = document.getElementById('viewDashboard');
+      const guideView = document.getElementById('viewGuide');
+      const dashBtn = document.getElementById('tabBtnDashboard');
+      const guideBtn = document.getElementById('tabBtnGuide');
+
+      if (tab === 'dashboard') {
+        dashView.classList.remove('hidden');
+        guideView.classList.add('hidden');
+        dashBtn.className = 'px-3.5 py-1.5 rounded-lg font-medium transition bg-amber-500 text-gray-950 font-bold shadow';
+        guideBtn.className = 'px-3.5 py-1.5 rounded-lg font-medium transition text-gray-400 hover:text-white';
+      } else {
+        dashView.classList.add('hidden');
+        guideView.classList.remove('hidden');
+        guideBtn.className = 'px-3.5 py-1.5 rounded-lg font-medium transition bg-amber-500 text-gray-950 font-bold shadow';
+        dashBtn.className = 'px-3.5 py-1.5 rounded-lg font-medium transition text-gray-400 hover:text-white';
+      }
+    }
+
+    function copyMcpConfig() {
+      const snippet = document.getElementById('mcpConfigSnippet').innerText;
+      navigator.clipboard.writeText(snippet);
+      alert('📋 MCP JSON 配置已成功复制到剪贴板！');
     }
 
     // 初始化加载

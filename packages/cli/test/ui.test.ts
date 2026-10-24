@@ -14,12 +14,13 @@ async function testUiServer() {
     const baseUrl = `http://localhost:${testPort}`;
 
     // 1. GET /
-    console.log("\n[Test 1] 测试根路径 HTML 返回...");
+    console.log("\n[Test 1] 测试根路径 HTML 返回与操作指南 Tab...");
     const htmlRes = await fetch(`${baseUrl}/`);
     assert.strictEqual(htmlRes.status, 200);
     const html = await htmlRes.text();
     assert.ok(html.includes("Amber（灵珀）"));
-    console.log("  ✔ HTML 页面渲染正常");
+    assert.ok(html.includes("操作指南与教程"));
+    console.log("  ✔ HTML 页面渲染正常, 操作指南 Tab 存在");
 
     // 2. GET /api/overview
     console.log("\n[Test 2] 测试 GET /api/overview...");
