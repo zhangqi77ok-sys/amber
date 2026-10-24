@@ -1,0 +1,25 @@
+{
+  "name": "@amber/mcp-server",
+  "version": "0.1.0",
+  "description": "Official Amber MCP Server for Cursor, Claude Desktop, and Zed",
+  "type": "module",
+  "bin": {
+    "amber-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "tsx test/mcp.test.ts"
+  },
+  "dependencies": {
+    "@amber/runtime": "file:../runtime",
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
