@@ -8,6 +8,6 @@ cache/
 # Environment variables
 .env
 
-# OS Files
-.DS_Store
-Thumbs.db
+# Local Amber storage
+.amber/
+**/storage.json
