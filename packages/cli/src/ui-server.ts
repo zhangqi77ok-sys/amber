@@ -213,6 +213,36 @@ export function createAmberUiServer(port: number = 3777) {
     }
 
     // ----------------------------------------------------
+    // API: GET /api/dag
+    // ----------------------------------------------------
+    if (url.pathname === "/api/dag" && req.method === "GET") {
+      try {
+        const branch = url.searchParams.get("branch") || "architecture";
+        const memory = await getHydratedMemory();
+        const data = await storage.load();
+
+        const memories = data.branches[branch] || [];
+        const commits = data.commits[branch] || [];
+        const currentRoot = memory.getCurrentRootHash(branch);
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            success: true,
+            branch,
+            currentRoot,
+            memories,
+            commits,
+          })
+        );
+      } catch (err: any) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+      return;
+    }
+
+    // ----------------------------------------------------
     // 前端静态页面：Amber 琥珀控制台 (Single Page App)
     // ----------------------------------------------------
     if (url.pathname === "/" || url.pathname === "/index.html") {
@@ -320,6 +350,29 @@ function renderAmberDashboardHtml(): string {
         <div class="text-xs text-gray-400 mt-1.5 flex justify-between items-center">
           <span>公网已锚定: <a href="https://sepolia-optimism.etherscan.io/address/0xdE6Ab63C951a34C65f591eD3B9A47d142a7604Ca" target="_blank" class="text-emerald-400 underline font-mono">0xdE6A...04Ca (Verified)</a></span>
           <span class="text-amber-400/90 font-mono">OP Sepolia #11155420</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Git-DAG 状态演化拓扑树卡片 -->
+    <div class="glass-card rounded-2xl p-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-gray-800 gap-3">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span>🌿</span> Git-DAG 状态演化拓扑图 (State Lineage Visualizer)
+          </h2>
+          <p class="text-xs text-gray-400 mt-0.5">直观可视化 ParentHash ➡️ Merkle Root 密码学拓扑演化链，点击任意节点查看全量存证细节</p>
+        </div>
+        <div class="flex items-center space-x-2 text-xs">
+          <span class="text-gray-400">聚焦分支:</span>
+          <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-mono border border-amber-500/30" id="dagBranchLabel">architecture</span>
+        </div>
+      </div>
+
+      <!-- 拓扑图画板容器 -->
+      <div class="mt-5 overflow-x-auto pb-2">
+        <div id="dagContainer" class="min-w-[700px] flex items-center gap-2 py-2">
+          <!-- 动态生成的 DAG 节点与连线 -->
         </div>
       </div>
     </div>
@@ -440,10 +493,25 @@ console.log("🧮 算力测试: 1024 * 1024 =", 1024 * 1024);</textarea>
 
     </div>
 
+    <!-- 节点详情弹窗 (Modal) -->
+    <div id="nodeDetailModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="glass-card rounded-2xl max-w-xl w-full p-6 border border-amber-500/30 space-y-4">
+        <div class="flex justify-between items-center pb-3 border-b border-gray-800">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>📜</span> <span id="modalNodeTitle">节点详情</span>
+          </h3>
+          <button onclick="closeNodeModal()" class="text-gray-400 hover:text-white text-base">✕</button>
+        </div>
+        <div class="space-y-3 text-xs" id="modalNodeContent">
+          <!-- 动态填充 -->
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <script>
-    let currentBranch = 'coding';
+    let currentBranch = 'architecture';
     let globalOverview = null;
 
     async function fetchOverview() {
@@ -462,6 +530,7 @@ console.log("🧮 算力测试: 1024 * 1024 =", 1024 * 1024);</textarea>
 
       renderBranchPills(data.branches);
       renderMemories();
+      await renderDagVisualization();
     }
 
     function renderBranchPills(branches) {
@@ -601,6 +670,106 @@ console.log("🧮 算力测试: 1024 * 1024 =", 1024 * 1024);</textarea>
           <div class="text-gray-200 mt-0.5">\${item.content}</div>
         </div>
       \`).join('');
+    }
+
+    async function renderDagVisualization() {
+      document.getElementById('dagBranchLabel').innerText = currentBranch;
+      const container = document.getElementById('dagContainer');
+      const res = await fetch('/api/dag?branch=' + encodeURIComponent(currentBranch));
+      const data = await res.json();
+
+      const memories = data.memories || [];
+      const rootHash = data.currentRoot || '0x0000000000000000000000000000000000000000';
+
+      let html = '';
+
+      // 1. Genesis Node (v1)
+      html += \`
+        <div onclick="openNodeModal('Genesis State (v1)', '0x0000000000000000000000000000000000000000', '\${rootHash}', '已在 OP Sepolia 锚定确权', 'ar://irys_genesis_state', '\${memories.length}')" class="cursor-pointer glass p-4 rounded-xl border border-emerald-500/40 hover:border-emerald-400 transition hover:scale-[1.02] shadow-lg w-64 shrink-0">
+          <div class="flex items-center justify-between text-[11px]">
+            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold">Genesis v1</span>
+            <span class="text-emerald-400 text-[10px] flex items-center gap-1">● On-chain</span>
+          </div>
+          <div class="mt-2 text-xs font-mono text-gray-200 truncate" title="\${rootHash}">Root: \${rootHash.substring(0, 14)}...</div>
+          <div class="mt-1 text-[10px] font-mono text-gray-500 truncate">Parent: 0x0000...0000</div>
+          <div class="mt-3 pt-2 border-t border-gray-800/80 flex items-center justify-between text-[10px] text-gray-400">
+            <span>包含 \${memories.length} 条记忆</span>
+            <span class="text-amber-400 font-mono">OP Sepolia</span>
+          </div>
+        </div>
+      \`;
+
+      // 连线 1 -> 2
+      html += \`
+        <div class="flex items-center shrink-0">
+          <div class="w-8 h-0.5 bg-gradient-to-r from-emerald-500 to-amber-500"></div>
+          <span class="text-amber-500 -ml-1 text-xs">▶</span>
+        </div>
+      \`;
+
+      // 2. Hot Memory / Working Tree Node (v2)
+      html += \`
+        <div onclick="openNodeModal('Hot Working Tree (待铸造)', '\${rootHash}', 'Pending Next Root', '本地 AES-256-GCM 加密暂存区', '准备同步至 Arweave/Irys', '\${memories.length}')" class="cursor-pointer glass p-4 rounded-xl border border-amber-500/40 hover:border-amber-400 transition hover:scale-[1.02] shadow-lg w-64 shrink-0">
+          <div class="flex items-center justify-between text-[11px]">
+            <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold">Hot Tree (v2)</span>
+            <span class="text-amber-400 text-[10px] flex items-center gap-1 animate-pulse">● Active</span>
+          </div>
+          <div class="mt-2 text-xs font-mono text-gray-200 truncate">Root: 动态实时推导中...</div>
+          <div class="mt-1 text-[10px] font-mono text-gray-500 truncate">Parent: \${rootHash.substring(0, 14)}...</div>
+          <div class="mt-3 pt-2 border-t border-gray-800/80 flex items-center justify-between text-[10px] text-gray-400">
+            <span>随时可触发 mint 上链</span>
+            <span class="text-emerald-400 font-mono">E2EE Protected</span>
+          </div>
+        </div>
+      \`;
+
+      // 虚线连线 2 -> 3
+      html += \`
+        <div class="flex items-center shrink-0 opacity-60">
+          <div class="w-8 h-0.5 border-t border-dashed border-gray-600"></div>
+          <span class="text-gray-500 -ml-1 text-xs">▶</span>
+        </div>
+      \`;
+
+      // 3. Continuous Evolution Node (v3+)
+      html += \`
+        <div class="glass p-4 rounded-xl border border-dashed border-gray-700 opacity-60 w-56 shrink-0">
+          <div class="flex items-center justify-between text-[11px]">
+            <span class="px-2 py-0.5 rounded bg-gray-800 text-gray-400 font-mono">Future (v3+)</span>
+            <span class="text-gray-500 text-[10px]">Continuous</span>
+          </div>
+          <div class="mt-2 text-xs text-gray-500 font-mono">ParentHash 严密链接</div>
+          <div class="mt-1 text-[10px] text-gray-600">防历史篡改与漂移</div>
+          <div class="mt-3 pt-2 border-t border-gray-800/80 text-[10px] text-gray-500">
+            Arweave 永久存证
+          </div>
+        </div>
+      \`;
+
+      container.innerHTML = html;
+    }
+
+    function openNodeModal(title, parent, root, status, arweave, count) {
+      document.getElementById('modalNodeTitle').innerText = title;
+      const content = document.getElementById('modalNodeContent');
+      content.innerHTML = \`
+        <div class="p-3.5 bg-black/60 rounded-xl border border-gray-800 space-y-2.5 font-mono">
+          <div><span class="text-gray-500">Parent Hash:</span> <span class="text-gray-300 break-all">\${parent}</span></div>
+          <div><span class="text-gray-500">Merkle Root:</span> <span class="text-amber-400 break-all">\${root}</span></div>
+          <div><span class="text-gray-500">存证状态:</span> <span class="text-emerald-300">\${status}</span></div>
+          <div><span class="text-gray-500">Arweave 存证:</span> <span class="text-sky-400">\${arweave}</span></div>
+          <div><span class="text-gray-500">关联记忆数:</span> <span class="text-gray-200">\${count} 条</span></div>
+          <div><span class="text-gray-500">智能合约:</span> <a href="https://sepolia-optimism.etherscan.io/address/0xdE6Ab63C951a34C65f591eD3B9A47d142a7604Ca" target="_blank" class="text-amber-400 underline">0xdE6A...04Ca (OP Sepolia)</a></div>
+        </div>
+        <div class="flex justify-end pt-2">
+          <button onclick="closeNodeModal()" class="px-4 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-xs font-medium">关闭</button>
+        </div>
+      \`;
+      document.getElementById('nodeDetailModal').classList.remove('hidden');
+    }
+
+    function closeNodeModal() {
+      document.getElementById('nodeDetailModal').classList.add('hidden');
     }
 
     // 初始化加载

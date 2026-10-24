@@ -79,6 +79,16 @@ async function testUiServer() {
     assert.ok(sandData.result.stdout.includes("Sandbox math result: 56088"));
     console.log("  ✔ 沙盒安全执行 API 正常返回执行结果");
 
+    // 6. GET /api/dag
+    console.log("\n[Test 6] 测试 GET /api/dag 状态演化拓扑接口...");
+    const dagRes = await fetch(`${baseUrl}/api/dag?branch=coding`);
+    assert.strictEqual(dagRes.status, 200);
+    const dagData = await dagRes.json();
+    assert.strictEqual(dagData.success, true);
+    assert.strictEqual(dagData.branch, "coding");
+    assert.ok(dagData.currentRoot);
+    console.log(`  ✔ DAG 拓扑 API 响应正常, 当前 Merkle Root: ${dagData.currentRoot}`);
+
     console.log("\n==================================================");
     console.log("🎉 Amber Web UI API 全部测试通过！");
     console.log("==================================================");
