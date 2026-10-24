@@ -6,6 +6,7 @@ import path from "node:path";
 import {
   MemoryRuntime,
   SandboxRuntime,
+  ArweaveStorageService,
 } from "@amber/runtime";
 import { LocalStorage } from "./storage.js";
 import { createAmberUiServer } from "./ui-server.js";
@@ -189,6 +190,13 @@ program
 
     const commit = memory.createDeltaCommit(branch);
 
+    const arweave = new ArweaveStorageService({ network: "devnet" });
+    const uploadRes = await arweave.uploadEncryptedDelta(commit.encryptedPayload, {
+      branch,
+      rootHash: commit.newRootHash,
+      parentHash: commit.parentHash,
+    });
+
     console.log("==================================================");
     console.log("💎 Amber Git-DAG 增量铸造就绪 (Ready to Mint)");
     console.log("==================================================");
@@ -197,7 +205,10 @@ program
     console.log(`🌲 New Merkle Root (新版本): ${commit.newRootHash}`);
     console.log(`📦 本次新增条目数: ${commit.deltaPackage.mutations.added.length}`);
     console.log(`🔒 加密密文摘要 (E2EE): ${commit.encryptedPayload.ciphertext.substring(0, 32)}...`);
-    console.log("\n💡 提示：可通过前端或 `amber-client` 唤起钱包签名写入 Base 智能合约。");
+    console.log(`🌐 Arweave 永久存储 URI: ${uploadRes.arweaveUrl}`);
+    console.log(`🌍 Irys Web3 访问网关: ${uploadRes.gatewayUrl}`);
+    console.log(`📊 密文体积: ${uploadRes.sizeBytes} 字节 (< 100 KB 永久免 Gas 存证)`);
+    console.log("\n💡 提示：可通过前端或 `amber-client` 唤起钱包签名写入 Base/OP 智能合约。");
     console.log("==================================================");
   });
 

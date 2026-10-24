@@ -37,11 +37,12 @@ async function testCli() {
   console.log("  ✔ amber recall 精确命中记忆条目");
 
   // 4. 测试 amber mint
-  console.log("\n[Test 4] 测试 amber mint 生成上链数据包...");
+  console.log("\n[Test 4] 测试 amber mint 生成上链数据包与 Arweave 永久存储 URI...");
   const mintRes = await runCli(`mint -b coding`);
   assert.ok(mintRes.stdout.includes("Amber Git-DAG 增量铸造就绪"));
   assert.ok(mintRes.stdout.includes("New Merkle Root"));
-  console.log("  ✔ amber mint 成功计算增量并准备上链");
+  assert.ok(mintRes.stdout.includes("Arweave 永久存储 URI"));
+  console.log("  ✔ amber mint 成功计算增量并集成 Arweave 永久存储");
 
   // 5. 测试 amber run 沙盒执行
   console.log("\n[Test 5] 测试 amber run 沙盒隔离执行代码...");

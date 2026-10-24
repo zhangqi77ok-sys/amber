@@ -1,6 +1,6 @@
 import http from "node:http";
 import path from "node:path";
-import { MemoryRuntime, SandboxRuntime } from "@amber/runtime";
+import { MemoryRuntime, SandboxRuntime, ArweaveStorageService } from "@amber/runtime";
 import { LocalStorage } from "./storage.js";
 
 const storage = new LocalStorage();
@@ -159,6 +159,12 @@ export function createAmberUiServer(port: number = 3777) {
           const { branch = "coding" } = JSON.parse(body);
           const memory = await getHydratedMemory();
           const commit = memory.createDeltaCommit(branch);
+          const arweave = new ArweaveStorageService({ network: "devnet" });
+          const uploadRes = await arweave.uploadEncryptedDelta(commit.encryptedPayload, {
+            branch,
+            rootHash: commit.newRootHash,
+            parentHash: commit.parentHash,
+          });
 
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(
@@ -168,6 +174,9 @@ export function createAmberUiServer(port: number = 3777) {
               newRootHash: commit.newRootHash,
               addedCount: commit.deltaPackage.mutations.added.length,
               ciphertextPreview: commit.encryptedPayload.ciphertext.substring(0, 32) + "...",
+              arweaveUrl: uploadRes.arweaveUrl,
+              gatewayUrl: uploadRes.gatewayUrl,
+              sizeBytes: uploadRes.sizeBytes,
             })
           );
         } catch (e: any) {
@@ -534,7 +543,11 @@ console.log("🧮 算力测试: 1024 * 1024 =", 1024 * 1024);</textarea>
         body: JSON.stringify({ branch: currentBranch })
       });
       const data = await res.json();
-      alert('📦 Git-DAG 上链数据包已构建！\\nParentHash: ' + data.parentHash.substring(0, 16) + '...\\nNew Root: ' + data.newRootHash + '\\nE2EE 密文: ' + data.ciphertextPreview);
+      alert('📦 Git-DAG 增量包与 Arweave 永久存储已就绪！\\n' +
+        '🌐 Arweave URI: ' + data.arweaveUrl + '\\n' +
+        '🌍 Irys 网关: ' + data.gatewayUrl + '\\n' +
+        '🌲 New Merkle Root: ' + data.newRootHash + '\\n' +
+        '📊 数据体积: ' + data.sizeBytes + ' 字节 (< 100 KB 永久免 Gas 存证)');
     }
 
     async function handleRunSandbox() {

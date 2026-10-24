@@ -3,3 +3,4 @@ export * from "./memory/crypto.js";
 export * from "./memory/memory-runtime.js";
 export * from "./sandbox/sandbox-runtime.js";
 export * from "./blockchain/amber-client.js";
+export * from "./storage/arweave-storage.js";
