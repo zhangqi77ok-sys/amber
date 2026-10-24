@@ -1,0 +1,31 @@
+{
+  "name": "amber-monorepo",
+  "version": "0.1.0",
+  "description": "Amber: Sovereign Memory & Isolated Sandbox Agent Platform in Pure TypeScript",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=@amber/runtime && npm run build --workspace=@amber/mcp-server && npm run build --workspace=@amber/cli",
+    "test": "node scripts/run-all-tests.js",
+    "test:contracts": "npm run test --workspace=contracts",
+    "test:runtime": "npm run test --workspace=@amber/runtime",
+    "test:mcp": "npm run test --workspace=@amber/mcp-server",
+    "test:cli": "npm run test --workspace=@amber/cli",
+    "demo": "node scripts/e2e-demo.js"
+  },
+  "keywords": [
+    "ai-agent",
+    "sovereign-memory",
+    "sandbox",
+    "mcp",
+    "blockchain",
+    "base-l2",
+    "git-dag",
+    "amber"
+  ],
+  "author": "Amber Core Team",
+  "license": "MIT"
+}

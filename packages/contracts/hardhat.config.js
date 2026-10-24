@@ -1,3 +1,4 @@
+require("dotenv").config();
 require("@nomicfoundation/hardhat-toolbox");
 require("@openzeppelin/hardhat-upgrades");
 
@@ -18,6 +19,11 @@ module.exports = {
       url: process.env.BASE_SEPOLIA_RPC || "https://sepolia.base.org",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 84532,
+    },
+    opSepolia: {
+      url: process.env.OP_SEPOLIA_RPC || "https://sepolia.optimism.io",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 11155420,
     },
     baseMainnet: {
       url: process.env.BASE_MAINNET_RPC || "https://mainnet.base.org",
