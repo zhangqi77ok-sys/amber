@@ -14,7 +14,8 @@
     "test:runtime": "npm run test --workspace=@amber/runtime",
     "test:mcp": "npm run test --workspace=@amber/mcp-server",
     "test:cli": "npm run test --workspace=@amber/cli",
-    "demo": "node scripts/e2e-demo.js"
+    "demo": "node scripts/e2e-demo.js",
+    "ui": "npm run ui --workspace=@amber/cli"
   },
   "keywords": [
     "ai-agent",

@@ -9,7 +9,10 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
-    "test": "tsx test/cli.test.ts"
+    "ui": "tsx src/index.ts ui",
+    "test": "tsx test/cli.test.ts && tsx test/ui.test.ts",
+    "test:cli": "tsx test/cli.test.ts",
+    "test:ui": "tsx test/ui.test.ts"
   },
   "dependencies": {
     "@amber/runtime": "file:../runtime",

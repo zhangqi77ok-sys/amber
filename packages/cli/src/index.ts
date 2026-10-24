@@ -8,6 +8,7 @@ import {
   SandboxRuntime,
 } from "@amber/runtime";
 import { LocalStorage } from "./storage.js";
+import { createAmberUiServer } from "./ui-server.js";
 
 const program = new Command();
 const storage = new LocalStorage();
@@ -240,6 +241,20 @@ program
       console.log("\n[标准错误 STDERR]:\n" + result.stderr);
     }
     console.log("==================================================");
+  });
+
+// ----------------------------------------------------
+// 7. amber ui
+// ----------------------------------------------------
+program
+  .command("ui")
+  .description("启动 Amber 现代可视化琥珀控制台 (Web UI Dashboard)")
+  .option("-p, --port <port>", "服务监听端口", "3777")
+  .action(async (options) => {
+    const port = parseInt(options.port, 10) || 3777;
+    const { listen } = createAmberUiServer(port);
+    await listen();
+    console.log("💡 按 Ctrl+C 即可停止服务。");
   });
 
 program.parse(process.argv);
