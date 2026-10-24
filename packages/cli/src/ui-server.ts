@@ -308,9 +308,9 @@ function renderAmberDashboardHtml(): string {
         <div class="text-sm font-mono text-amber-400 mt-2 truncate bg-black/40 px-3 py-2 rounded-lg border border-amber-500/20" id="statLatestRoot">
           0x0000000000000000000000000000000000000000
         </div>
-        <div class="text-xs text-gray-500 mt-1.5 flex justify-between">
-          <span>随时准备唤起指纹锚定存证</span>
-          <span class="text-amber-400/80">Base Sepolia #84532</span>
+        <div class="text-xs text-gray-400 mt-1.5 flex justify-between items-center">
+          <span>公网已锚定: <a href="https://sepolia-optimism.etherscan.io/address/0xdE6Ab63C951a34C65f591eD3B9A47d142a7604Ca" target="_blank" class="text-emerald-400 underline font-mono">0xdE6A...04Ca (Verified)</a></span>
+          <span class="text-amber-400/90 font-mono">OP Sepolia #11155420</span>
         </div>
       </div>
     </div>

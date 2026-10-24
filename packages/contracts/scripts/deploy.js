@@ -33,9 +33,29 @@ async function main() {
   console.log("🎉 部署成功!");
   console.log(`📝 Proxy 合约地址 (用户交互地址): ${proxyAddress}`);
   console.log(`⚙️  Implementation 逻辑实现地址: ${implAddress}`);
+
+  const userAddress = "0xE106C84646B851af709C5672b5Fb5D7E0FD5fC39";
+  if (userAddress && userAddress.toLowerCase() !== deployer.address.toLowerCase()) {
+    console.log(`👑 正在将合约最高管理权限授予您的钱包: ${userAddress}...`);
+    try {
+      const adminRole = await amberRegistry.DEFAULT_ADMIN_ROLE();
+      const upgraderRole = await amberRegistry.UPGRADER_ROLE();
+      const operatorRole = await amberRegistry.OPERATOR_ROLE();
+      await (await amberRegistry.grantRole(adminRole, userAddress)).wait();
+      await (await amberRegistry.grantRole(upgraderRole, userAddress)).wait();
+      await (await amberRegistry.grantRole(operatorRole, userAddress)).wait();
+      console.log(`✔ 权限授予成功！您的钱包已获得该合约的主权所有权。`);
+    } catch (e) {
+      console.log(`⚠️ 权限授予跳过或后续可手动调用: ${e.message}`);
+    }
+  }
+
   console.log("==================================================");
   console.log("💡 下一步建议：");
-  console.log(`可在 BaseScan 浏览器查看: https://sepolia.basescan.org/address/${proxyAddress}`);
+  let explorerBase = "https://sepolia-optimism.etherscan.io";
+  if (Number(network.chainId) === 84532) explorerBase = "https://sepolia.basescan.org";
+  if (Number(network.chainId) === 8453) explorerBase = "https://basescan.org";
+  console.log(`可在区块链浏览器查看: ${explorerBase}/address/${proxyAddress}`);
 }
 
 main()
