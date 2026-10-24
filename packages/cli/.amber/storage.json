@@ -1,0 +1,18 @@
+{
+  "branches": {
+    "coding": [
+      {
+        "id": "mem_1792853881312_qjrp8",
+        "branch": "coding",
+        "content": "测试通过 CLI 沉淀一条关于分布式系统的经验",
+        "tags": [
+          "consensus",
+          "distributed"
+        ],
+        "importance": 4,
+        "timestamp": 1792853881312
+      }
+    ]
+  },
+  "commits": {}
+}
