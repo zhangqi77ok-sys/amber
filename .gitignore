@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Hardhat files
+artifacts/
+cache/
+
+# Environment variables
+.env
+
+# OS Files
+.DS_Store
+Thumbs.db
